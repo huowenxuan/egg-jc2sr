@@ -1,0 +1,31 @@
+{
+  "name": "egg-jc2sr",
+  "version": "0.0.1",
+  "description": "joi controller to swagger & router",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "joi-to-swagger": "^3.0.0",
+    "moment": "^2.22.2",
+    "joi": "^14.0.4",
+    "lodash": "^4.17.11"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/huowenxuan/egg-jc2sr.git"
+  },
+  "keywords": [
+    "joi",
+    "swagger",
+    "router",
+    "egg"
+  ],
+  "author": "huowenxuan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/huowenxuan/egg-jc2sr/issues"
+  },
+  "homepage": "https://github.com/huowenxuan/egg-jc2sr#readme"
+}
