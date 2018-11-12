@@ -13,6 +13,9 @@ const ctMap = new Map();
 const ctHandler = new ControllerHandler();
 const methodHandler = new MethodHandler(ctMap);
 
+const swaggerPath = nodePath.join(__dirname, nodePath.normalize('../swagger'));
+const swaggerFileName = '/swagger.json'
+
 const initRouter = (app, options = {}) => {
   const {router, jwt} = app;
   // 设置全局路由前缀
@@ -187,15 +190,13 @@ Host ${app.config.host}\n
         }
       };
 
-      // app.logger.debug(`${reqMethod.toUpperCase()} ${prefix + path}`)
       router[reqMethod](prefix + path, routerCb);
     }
   }
 
   if (swaggerOpened) {
-    const outPath = nodePath.join(__dirname, nodePath.normalize('../../../public/swagger/swagger.json'));
-    fs.writeFileSync(outPath, JSON.stringify(swaggerJson), {encoding: 'utf8'});
-    app.logger.debug('swagger文档已生成  ' + app.config.host + '/swagger')
+    fs.writeFileSync(swaggerPath + swaggerFileName, JSON.stringify(swaggerJson), {encoding: 'utf8'});
+    app.logger.debug('swagger文档已生成 ' + swaggerOpt.root)
   }
 };
 
@@ -227,6 +228,8 @@ function replaceColon(path) {
 }
 
 module.exports = {
+  swaggerPath,
+  swaggerFileName,
   initRouter,
   createSchema: BaseSchema.createSchema,
   createSingleSchema: BaseSchema.createSingleSchema,

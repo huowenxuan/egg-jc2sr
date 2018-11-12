@@ -3,7 +3,6 @@ const methodHandler = src.methodHandler
 const ctHandler = src.ctHandler
 
 module.exports = {
-  initRouter:src.initRouter,
   createSchema:src.createSchema,
   createSingleSchema:src.createSingleSchema,
 
