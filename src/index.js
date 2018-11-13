@@ -33,21 +33,7 @@ const initRouter = (app, options = {}) => {
       info: {
         title: swaggerOpt.title || '',
         version: swaggerOpt.version || '',
-        description: `
-Host ${app.config.host}\n
-更新于 ${moment().format('YYYY-MM-DD HH:mm:ss')}\n
-<strong>浏览器有缓存 Cmd+Shift+R（或Ctrl + F5） 强制刷新</strong>\n
-    返回格式统一为
-    {
-      success: true | false,
-      data: object | null,
-      error: null | string
-    }
-    也可根据状态码判断是否正确
-    
-百翠山居scenic_id 1037975263817895936\n
-一个user_id 1
-`
+        description: swaggerOpt.description || '',
       },
       host: '',
       basePath: options.prefix,
