@@ -69,7 +69,7 @@ module.exports = (pathPrefix = '', swaggerFileName = '', moreConfig = '{}') => `
           onFailure: function(data) {
             log("Unable to Load SwaggerUI");
           },
-          docExpansion: "list",
+          // docExpansion: "list", // 不展开
           // jsonEditor: true, // 如果设置为true，会将body的每一项都列出来，无法去掉
           defaultModelRendering: 'schema',
           showRequestHeaders: true,
