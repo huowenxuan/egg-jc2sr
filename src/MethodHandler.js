@@ -6,7 +6,6 @@ const METADATA = {
   BEFORES: 'befores',
   AFTER: 'after',
   MESSAGE: 'message',
-  IGNORE_JWT: 'ignoreJwt',
   DEPRECATED: 'deprecated',
   TAGS: 'tags',
   SUMMARY: 'summary',
@@ -18,6 +17,7 @@ const METADATA = {
   CONSUMES: 'consumes',
   TOKEN_TYPE: 'token_type',
   RENDER: 'render',
+  JWT: 'jwt'
 }
 
 const createMappingDecorator = Symbol('createMappingDecorator');
@@ -36,8 +36,8 @@ class MethodHandler {
     const befores = Reflect.getMetadata(METADATA.BEFORES, targetCb) || [];
     const after = Reflect.getMetadata(METADATA.AFTER, targetCb) || [];
     const message = Reflect.getMetadata(METADATA.MESSAGE, targetCb);
-    const ignoreJwt = Reflect.getMetadata(METADATA.IGNORE_JWT, targetCb);
     const deprecated = Reflect.getMetadata(METADATA.DEPRECATED, targetCb);
+    const jwt = Reflect.getMetadata(METADATA.JWT, targetCb);
     const body = Reflect.getMetadata(METADATA.BODY, targetCb) || null;
     const query = Reflect.getMetadata(METADATA.QUERY, targetCb) || [];
     const response = Reflect.getMetadata(METADATA.RESPONSE, targetCb) || {};
@@ -54,7 +54,6 @@ class MethodHandler {
       befores,
       after,
       message,
-      ignoreJwt,
       deprecated,
       body,
       query,
@@ -65,7 +64,8 @@ class MethodHandler {
       produces,
       consumes,
       tokenType,
-      render
+      render,
+      jwt
     };
   }
 
@@ -109,12 +109,12 @@ class MethodHandler {
     return this[createSingleDecorator](METADATA.MESSAGE);
   }
 
-  ignoreJwt () {
-    return this[createSingleDecorator](METADATA.IGNORE_JWT)(true);
-  }
-
   deprecated() {
     return this[createSingleDecorator](METADATA.DEPRECATED)(true);
+  }
+
+  jwt() {
+    return this[createSingleDecorator](METADATA.JWT)(true);
   }
 
   tags () {

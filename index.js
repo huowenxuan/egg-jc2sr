@@ -17,8 +17,8 @@ module.exports = {
   Befores:methodHandler.befores(),
   After:methodHandler.after(),
   Message:methodHandler.message(),
-  IgnoreJwt:methodHandler.ignoreJwt(),
   Deprecated:methodHandler.deprecated(),
+  Jwt:methodHandler.jwt(),
 
   Tags:methodHandler.tags(),
   Summary:methodHandler.summary(),
@@ -31,7 +31,6 @@ module.exports = {
   TokenType:methodHandler.tokenType(),
   Render:methodHandler.render(),
 
-  IgnoreJwtAll:ctHandler.ignoreJwtAll(),
   BeforeAll:ctHandler.beforeAll(),
   AfterAll:ctHandler.afterAll(),
   Prefix:ctHandler.prefix(),

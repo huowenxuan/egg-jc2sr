@@ -5,7 +5,6 @@ const METADATA = {
   CONTROLLER_PREFIX: 'controller_prefix',
   CONTROLLER_AFTER_ALL: 'controller_after',
   CONTROLLER_BEFORE_ALL: 'controller_before_all',
-  CONTROLLER_IGNORE_JWT_ALL: 'controller_ignore_jwt_all',
   CONTROLLER_TAGS_ALL: 'controller_tags_all',
   CONTROLLER_TOKEN_TYPE_ALL: 'controller_token_type_all',
   CONTROLLER_RENDER: 'controller_render'
@@ -16,10 +15,6 @@ const createSingleDecorator = Symbol('createSingleDecorator');
 const createTagsAllDecorator = Symbol('createTagsAllDecorator');
 
 class ControllerHandler {
-  ignoreJwtAll () {
-    return this[createSingleDecorator](METADATA.CONTROLLER_IGNORE_JWT_ALL)(true);
-  }
-
   beforeAll () {
     return this[createArrayDecorator](METADATA.CONTROLLER_BEFORE_ALL);
   }
@@ -45,7 +40,6 @@ class ControllerHandler {
   }
 
   getMetadata (target) {
-    const ignoreJwtAll = Reflect.getMetadata(METADATA.CONTROLLER_IGNORE_JWT_ALL, target);
     const beforeAll = Reflect.getMetadata(METADATA.CONTROLLER_BEFORE_ALL, target) || [];
     const afterAll = Reflect.getMetadata(METADATA.CONTROLLER_AFTER_ALL, target) || [];
     const prefix = Reflect.getMetadata(METADATA.CONTROLLER_PREFIX, target);
@@ -53,7 +47,6 @@ class ControllerHandler {
     const tokenTypeAll = Reflect.getMetadata(METADATA.CONTROLLER_TOKEN_TYPE_ALL, target);
     const renderController = Reflect.getMetadata(METADATA.CONTROLLER_RENDER, target);
     return {
-      ignoreJwtAll,
       beforeAll,
       afterAll,
       prefix,

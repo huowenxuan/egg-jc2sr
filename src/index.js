@@ -17,7 +17,7 @@ const swaggerPath = nodePath.join(__dirname, nodePath.normalize('../swagger'));
 const swaggerFileName = '/swagger.json'
 
 const initRouter = (app, options = {}) => {
-  const {router, jwt} = app;
+  const {router, jwt: jwtValidation} = app;
   // 设置全局路由前缀
   if (options.prefix) router.prefix(options.prefix);
   options.befores = options.befores || [];
@@ -46,7 +46,7 @@ const initRouter = (app, options = {}) => {
 
   for (const c of ctMap.values()) {
     // 解析控制器元数据
-    let {ignoreJwtAll, beforeAll, afterAll, prefix, tagsAll, tokenTypeAll, renderController} = ctHandler.getMetadata(c.constructor);
+    let {beforeAll, afterAll, prefix, tagsAll, renderController} = ctHandler.getMetadata(c.constructor);
     const propertyNames = _.filter(Object.getOwnPropertyNames(c), pName => {
       return pName !== 'constructor' && pName !== 'pathName' && pName !== 'fullPath';
     });
@@ -67,9 +67,10 @@ const initRouter = (app, options = {}) => {
     for (const pName of propertyNames) {
       // 解析函数元数据
       let {
-        reqMethod, path, befores, after, message, ignoreJwt, deprecated, tags, summary, description,
+        reqMethod, path, befores, after, message, deprecated, tags, summary, description,
         body, query,
-        response, produces, consumes, tokenType, render
+        response, produces, consumes, render,
+        jwt
       } = methodHandler.getMetadata(c[pName]);
       if (!reqMethod) {
         continue
@@ -111,25 +112,10 @@ const initRouter = (app, options = {}) => {
         let finallyPath = prefix + path;
         finallyPath = replaceColon(finallyPath);
 
-        if (!_.isEmpty(swaggerOpt.tokenOpt) && jwt && !ignoreJwtAll && !ignoreJwt) {
-          const tokenOpt = swaggerOpt.tokenOpt;
-          let token = null;
-          if (!_.isEmpty(tokenOpt.tokens)) {
-            let globalTokenType = null;
-            let partTokenType = null;
-            let defaultTokenType = tokenType || tokenTypeAll || tokenOpt.defaultTokenType || partTokenType || globalTokenType;
-            if (!defaultTokenType) {
-              defaultTokenType = Object.keys(tokenOpt.tokens)[0];
-            }
-            token = tokenOpt.tokens[defaultTokenType];
-          } else if (tokenOpt.token) {
-            token = tokenOpt.token;
-          }
-          if (token) {
-            parameters.unshift({
-              name: 'Authorization', in: 'header', description: 'Token', type: 'string', defaultValue: 'Bearer ' + token
-            });
-          }
+        if (jwtValidation && jwt) {
+          parameters.unshift({
+            name: 'Authorization', in: 'header', description: 'Token', type: 'string', defaultValue: 'Bearer ' + options.defaultToken
+          });
         }
 
         if (!swaggerJson.paths[finallyPath]) {
@@ -152,9 +138,14 @@ const initRouter = (app, options = {}) => {
       const routerCb = async (ctx, next) => {
         const instance = new c.constructor(ctx);
         try {
-          if (!ignoreJwt && !ignoreJwtAll && jwt && options.jwtValidation) {
-            await options.jwtValidation()(ctx, next);
+          if(jwt) {
+            if (!jwtValidation) {
+              throw new Error('要使用jwt，app.jwt必须存在')
+            }
+
+            await jwtValidation(ctx, next);
           }
+
           for (const before of finallyBefores) {
             await before(app)(ctx, next);
           }
