@@ -24,10 +24,8 @@ const initRouter = (app, options = {}) => {
   options.after = options.after || [];
 
   let swaggerJson = null;
-  let swaggerOpt = null;
-  let swaggerOpened = options.swaggerOpt && options.swaggerOpt.open
-  if (swaggerOpened) {
-    swaggerOpt = options.swaggerOpt;
+  let swaggerOpt = options.swaggerOpt || {};
+  if (swaggerOpt.open) {
     swaggerJson = {
       swagger: '2.0',
       info: {
@@ -59,7 +57,7 @@ const initRouter = (app, options = {}) => {
     // prefix = prefix.startsWith('/') ? prefix : '/' + prefix;
     prefix = '';
 
-    if (swaggerOpened && tagsAll) {
+    if (swaggerOpt.open && tagsAll) {
       tagsAll.name = tagsAll.name || prefix;
       swaggerJson.tags.push(tagsAll);
     }
@@ -108,13 +106,13 @@ const initRouter = (app, options = {}) => {
         ? {200: {schema: joiToSwagger(response).swagger}}
         : null
 
-      if (swaggerOpened) {
+      if (swaggerOpt.open) {
         let finallyPath = prefix + path;
         finallyPath = replaceColon(finallyPath);
 
         if (jwtValidation && jwt) {
           parameters.unshift({
-            name: 'Authorization', in: 'header', description: 'Token', type: 'string', defaultValue: 'Bearer ' + options.defaultToken
+            name: 'Authorization', in: 'header', description: 'Token', type: 'string', defaultValue: 'Bearer ' + swaggerOpt.defaultToken || ''
           });
         }
 
@@ -171,7 +169,7 @@ const initRouter = (app, options = {}) => {
     }
   }
 
-  if (swaggerOpened) {
+  if (swaggerOpt.open) {
     fs.writeFileSync(swaggerPath + swaggerFileName, JSON.stringify(swaggerJson), {encoding: 'utf8'});
     app.logger.debug('swagger文档已生成 ' + swaggerOpt.root)
   }
