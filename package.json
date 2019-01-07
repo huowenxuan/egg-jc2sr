@@ -1,6 +1,6 @@
 {
   "name": "egg-jc2sr",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "joi controller to swagger & router",
   "main": "index.js",
   "scripts": {
@@ -11,11 +11,11 @@
   },
   "dependencies": {
     "joi-to-swagger": "^3.0.0",
-    "swagger-ui": "^3.19.5",
     "koa-send": "^5.0.0",
-    "reflect-metadata": "^0.1.12",
     "lodash": "^4.17.11",
-    "moment": "^2.22.2"
+    "moment": "^2.22.2",
+    "reflect-metadata": "^0.1.12",
+    "swagger-ui": "^3.19.5"
   },
   "repository": {
     "type": "git",
