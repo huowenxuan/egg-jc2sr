@@ -17,8 +17,8 @@ module.exports = {
   Befores:methodHandler.befores(),
   After:methodHandler.after(),
   Message:methodHandler.message(),
-  Deprecated:methodHandler.deprecated(),
-  Jwt:methodHandler.jwt(),
+  Deprecated:()=>methodHandler.deprecated()(true),
+  Jwt:()=>methodHandler.jwt()(true),
 
   Tags:methodHandler.tags(),
   Summary:methodHandler.summary(),

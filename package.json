@@ -1,6 +1,6 @@
 {
   "name": "egg-jc2sr",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "joi controller to swagger & router",
   "main": "index.js",
   "scripts": {

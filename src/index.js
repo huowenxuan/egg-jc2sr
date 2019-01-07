@@ -73,6 +73,7 @@ const initRouter = (app, options = {}) => {
       if (!reqMethod) {
         continue
       }
+      console.log(deprecated)
 
       const finallyBefores = [...options.befores, ...beforeAll, ...befores];
       const afters = [...options.after, ...afterAll, ...after];

@@ -110,11 +110,11 @@ class MethodHandler {
   }
 
   deprecated() {
-    return this[createSingleDecorator](METADATA.DEPRECATED)(true);
+    return this[createSingleDecorator](METADATA.DEPRECATED);
   }
 
   jwt() {
-    return this[createSingleDecorator](METADATA.JWT)(true);
+    return this[createSingleDecorator](METADATA.JWT);
   }
 
   tags () {
