@@ -25,6 +25,7 @@ declare module 'egg-jc2sr' {
   export function Consumes(arg1: any)
   export function TokenType(arg1: any)
   export function Render(arg1: any)
+  export function For(arg1: any)
 
   export function BeforeAll(arg1: any)
   export function AfterAll(arg1: any)

@@ -68,12 +68,18 @@ const initRouter = (app, options = {}) => {
         reqMethod, path, befores, after, message, deprecated, tags, summary, description,
         body, query,
         response, produces, consumes, render,
-        jwt
+        jwt, For
       } = methodHandler.getMetadata(c[pName]);
       if (!reqMethod) {
         continue
       }
 
+      if (For && description) {
+        if (For === 'admin') For = '管理员'
+        if (For === 'user') For = '用户'
+        if (For === 'test') For = 'Test'
+        description = `${description} | ${For}`
+      }
       const finallyBefores = [...options.befores, ...beforeAll, ...befores];
       const afters = [...options.after, ...afterAll, ...after];
 

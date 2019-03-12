@@ -17,7 +17,8 @@ const METADATA = {
   CONSUMES: 'consumes',
   TOKEN_TYPE: 'token_type',
   RENDER: 'render',
-  JWT: 'jwt'
+  JWT: 'jwt',
+  FOR: 'For'
 }
 
 const createMappingDecorator = Symbol('createMappingDecorator');
@@ -48,6 +49,9 @@ class MethodHandler {
     const consumes = Reflect.getMetadata(METADATA.CONSUMES, targetCb) || [ 'application/json' ];
     const tokenType = Reflect.getMetadata(METADATA.TOKEN_TYPE, targetCb);
     const render = Reflect.getMetadata(METADATA.RENDER, targetCb);
+
+    const For = Reflect.getMetadata(METADATA.FOR, targetCb);
+
     return {
       reqMethod,
       path,
@@ -65,7 +69,8 @@ class MethodHandler {
       consumes,
       tokenType,
       render,
-      jwt
+      jwt,
+      For
     };
   }
 
@@ -155,6 +160,10 @@ class MethodHandler {
 
   render () {
     return this[createSingleDecorator](METADATA.RENDER)(true);
+  }
+
+  For() {
+    return this[createSingleDecorator](METADATA.FOR);
   }
 
   [createMappingDecorator] (method) {

@@ -30,6 +30,7 @@ module.exports = {
   Consumes:methodHandler.consumes(),
   TokenType:methodHandler.tokenType(),
   Render:methodHandler.render(),
+  For: methodHandler.For(),
 
   BeforeAll:ctHandler.beforeAll(),
   AfterAll:ctHandler.afterAll(),
