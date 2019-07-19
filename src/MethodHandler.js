@@ -41,7 +41,7 @@ class MethodHandler {
     const jwt = Reflect.getMetadata(METADATA.JWT, targetCb);
     const body = Reflect.getMetadata(METADATA.BODY, targetCb) || null;
     const query = Reflect.getMetadata(METADATA.QUERY, targetCb) || [];
-    const response = Reflect.getMetadata(METADATA.RESPONSE, targetCb) || {};
+    const response = Reflect.getMetadata(METADATA.RESPONSE, targetCb) || null;
     const tags = Reflect.getMetadata(METADATA.TAGS, targetCb);
     const summary = Reflect.getMetadata(METADATA.SUMMARY, targetCb);
     const description = Reflect.getMetadata(METADATA.DESCRIPTION, targetCb);

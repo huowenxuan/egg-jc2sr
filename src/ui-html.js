@@ -72,7 +72,7 @@ module.exports = (pathPrefix = '', swaggerFileName = '', moreConfig = '{}') => `
           // docExpansion: "list", // 不展开
           // jsonEditor: true, // 如果设置为true，会将body的每一项都列出来，无法去掉
           defaultModelRendering: 'schema',
-          showRequestHeaders: true,
+          showRequestHeaders: false,
           authorizations: {
             crsf: function() {
               // This function will get called /before/ each request
