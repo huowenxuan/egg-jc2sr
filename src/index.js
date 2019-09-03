@@ -38,7 +38,7 @@ const initRouter = (app, options = {}) => {
       schemes: ['http', 'https'],
       tags: [],
       paths: {},
-      definitions: {}
+      definitions: {},
     };
   }
 

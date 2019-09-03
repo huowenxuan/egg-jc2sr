@@ -9,7 +9,7 @@ module.exports = function swagger() {
     const {swaggerOpt} = context.app.config.jc2sr
     let pathRoot = swaggerOpt.root
     const pathPrefix = pathRoot.endsWith('/') ? pathRoot.substring(0, pathRoot.length - 1) : pathRoot
-    const html = UIHtml(pathPrefix, swaggerFileName, '{}')
+    const html = UIHtml(pathPrefix, swaggerFileName, JSON.stringify(swaggerOpt))
 
     if (context.path.startsWith(pathRoot)) {
       if (context.path === pathRoot && context.method === 'GET') {
