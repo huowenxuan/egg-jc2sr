@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 require('reflect-metadata')
 const _ = require('lodash')
 const moment = require('moment')
@@ -9,57 +9,62 @@ const BaseSchema = require('./BaseSchema')
 const MethodHandler = require('./MethodHandler')
 const joiToSwagger = require('joi-to-swagger')
 
-const ctMap = new Map();
-const ctHandler = new ControllerHandler();
-const methodHandler = new MethodHandler(ctMap);
+const ctMap = new Map()
+const ctHandler = new ControllerHandler()
+const methodHandler = new MethodHandler(ctMap)
 
-const swaggerPath = nodePath.join(__dirname, nodePath.normalize('../swagger'));
+const swaggerPath = nodePath.join(__dirname, nodePath.normalize('../swagger'))
 const swaggerFileName = '/swagger.json'
 
-const initRouter = (app, options = {}) => {
-  const {router, jwt: jwtValidation} = app;
-  // 设置全局路由前缀
-  if (options.prefix) router.prefix(options.prefix);
-  options.befores = options.befores || [];
-  options.after = options.after || [];
-
-  let swaggerJson = null;
-  let swaggerOpt = options.swaggerOpt || {};
-  if (swaggerOpt.open) {
-    swaggerJson = {
-      swagger: '2.0',
-      info: {
-        title: swaggerOpt.title || '',
-        version: swaggerOpt.version || '',
-        description: swaggerOpt.description || '',
-      },
-      host: '',
-      basePath: options.prefix,
-      schemes: ['http', 'https'],
-      tags: [],
-      paths: {},
-      definitions: {},
-    };
+function initSwaggerConfig(options) {
+  let {swaggerOpt, prefix} = options
+  swaggerOpt = swaggerOpt || {}
+  if (!swaggerOpt.open) return null
+  return {
+    swagger: '2.0',
+    info: {
+      title: swaggerOpt.title || '',
+      version: swaggerOpt.version || '',
+      description: swaggerOpt.description || '',
+    },
+    host: '',
+    basePath: prefix,
+    schemes: ['http', 'https'],
+    tags: [],
+    paths: {},
+    definitions: {},
   }
+}
 
+/**
+ *
+ * @param options
+ *  prefix
+ *  open
+ *  befores
+ *
+ */
+function initRouter(app, options = {}) {
+  const {router, jwt: jwtValidation} = app
+  // 设置全局路由前缀
+  if (options.prefix) router.prefix(options.prefix)
+  options.befores = options.befores || []
+  options.after = options.after || []
+
+  let swaggerOpt = options.swaggerOpt || {}
+  let swaggerJson = initSwaggerConfig(options)
   for (const c of ctMap.values()) {
     // 解析控制器元数据
-    let {beforeAll, afterAll, prefix, tagsAll, renderController} = ctHandler.getMetadata(c.constructor);
+    let {beforeAll, afterAll, prefix, tagsAll, renderController} = ctHandler.getMetadata(c.constructor)
     const propertyNames = _.filter(Object.getOwnPropertyNames(c), pName => {
-      return pName !== 'constructor' && pName !== 'pathName' && pName !== 'fullPath';
-    });
+      return pName !== 'constructor' && pName !== 'pathName' && pName !== 'fullPath'
+    })
 
-    // 以文件名为路由前缀，暂不使用
-    // 解析前缀
-    // const fullPath = c.fullPath.split('\\').join('/').replace(/[\/]{2,9}/g, '/').replace(/(\.ts)|(\.js)/g, '');
-    // const rootPath = 'controller/';
-    // prefix = prefix || fullPath.substring(fullPath.indexOf(rootPath) + rootPath.length);
-    // prefix = prefix.startsWith('/') ? prefix : '/' + prefix;
-    prefix = '';
+    prefix = ''
 
     if (swaggerOpt.open && tagsAll) {
-      tagsAll.name = tagsAll.name || prefix;
-      swaggerJson.tags.push(tagsAll);
+      tagsAll.name = tagsAll.name || prefix
+      swaggerJson.tags.push(tagsAll)
     }
 
     for (const pName of propertyNames) {
@@ -69,7 +74,7 @@ const initRouter = (app, options = {}) => {
         body, query,
         response, produces, consumes, render,
         jwt, For
-      } = methodHandler.getMetadata(c[pName]);
+      } = methodHandler.getMetadata(c[pName])
       if (!reqMethod) {
         continue
       }
@@ -80,12 +85,12 @@ const initRouter = (app, options = {}) => {
         if (For === 'test') For = 'Test'
         summary = `${summary} | ${For}`
       }
-      const finallyBefores = [...options.befores, ...beforeAll, ...befores];
-      const afters = [...options.after, ...afterAll, ...after];
+      const finallyBefores = [...options.befores, ...beforeAll, ...befores]
+      const afters = [...options.after, ...afterAll, ...after]
 
       let parameters = []
 
-      let params = getParams(path);
+      let params = getParams(path)
       parameters.push(...(params || []).map(el => {
         let defaultValue = {name: 'el', in: 'path', required: false, type: 'string'}
         if (_.isString(el)) {
@@ -113,17 +118,21 @@ const initRouter = (app, options = {}) => {
         : null
 
       if (swaggerOpt.open) {
-        let finallyPath = prefix + path;
-        finallyPath = replaceColon(finallyPath);
+        let finallyPath = prefix + path
+        finallyPath = replaceColon(finallyPath)
 
         if (jwtValidation && jwt) {
           parameters.unshift({
-            name: 'Authorization', in: 'header', description: 'Token', type: 'string', defaultValue: 'Bearer ' + swaggerOpt.defaultToken || ''
-          });
+            name: 'Authorization',
+            in: 'header',
+            description: 'Token',
+            type: 'string',
+            defaultValue: 'Bearer ' + swaggerOpt.defaultToken || ''
+          })
         }
 
         if (!swaggerJson.paths[finallyPath]) {
-          swaggerJson.paths[finallyPath] = {};
+          swaggerJson.paths[finallyPath] = {}
         }
         swaggerJson.paths[finallyPath][reqMethod] = {
           tags: ((tags && !Array.isArray(tags)) ? [tags] : tags)
@@ -136,22 +145,22 @@ const initRouter = (app, options = {}) => {
           consumes: (consumes && !Array.isArray(consumes)) ? [consumes] : consumes,
           parameters,
           responses
-        };
+        }
       }
 
       const routerCb = async (ctx, next) => {
-        const instance = new c.constructor(ctx);
+        const instance = new c.constructor(ctx)
         try {
-          if(jwt) {
+          if (jwt) {
             if (!jwtValidation) {
               throw new Error('要使用jwt，app.jwt必须存在')
             }
 
-            await jwtValidation(ctx, next);
+            await jwtValidation(ctx, next)
           }
 
           for (const before of finallyBefores) {
-            await before(app)(ctx, next);
+            await before(app)(ctx, next)
           }
 
           body && await ctx.validateJoi(body)
@@ -159,38 +168,38 @@ const initRouter = (app, options = {}) => {
             body: ctx.request ? ctx.request.body : {},
             query: ctx.request ? ctx.request.query : {},
             params: ctx.params || {}
-          });
+          })
           if (renderController || render) {
-            ctx.set('Content-Type', 'text/html;charset=utf-8');
+            ctx.set('Content-Type', 'text/html;charset=utf-8')
           }
           for (const after of afters) {
-            await after()(ctx, next);
+            await after()(ctx, next)
           }
         } catch (error) {
-          throw error;
+          throw error
         }
-      };
+      }
 
-      router[reqMethod](prefix + path, routerCb);
+      router[reqMethod](prefix + path, routerCb)
     }
   }
 
   if (swaggerOpt.open) {
-    fs.writeFileSync(swaggerPath + swaggerFileName, JSON.stringify(swaggerJson), {encoding: 'utf8'});
+    fs.writeFileSync(swaggerPath + swaggerFileName, JSON.stringify(swaggerJson), {encoding: 'utf8'})
     app.logger.debug('swagger文档已生成 ' + swaggerOpt.root)
   }
-};
+}
 
-const paramsRegex = /:[\w-]*/g;
+const paramsRegex = /:[\w-]*/g
 
 function getParams(path) {
   let params = []
   const getParam = () => {
-    const matchs = paramsRegex.exec(path);
-    if (!matchs) return path;
+    const matchs = paramsRegex.exec(path)
+    if (!matchs) return path
     let length = matchs[0].length
     let param = matchs[0].substr(1, length - 1)
-    path = path.replace(matchs[0], param);
+    path = path.replace(matchs[0], param)
     params.push(param)
     getParam(path)
   }
@@ -201,11 +210,11 @@ function getParams(path) {
 // 将冒号更换为{}
 function replaceColon(path) {
   // 是否有冒号开头的参数
-  const matchs = paramsRegex.exec(path);
-  if (!matchs) return path;
-  const pathItem = matchs[0].replace(':', '{') + '}';
-  path = path.replace(matchs[0], pathItem);
-  return replaceColon(path);
+  const matchs = paramsRegex.exec(path)
+  if (!matchs) return path
+  const pathItem = matchs[0].replace(':', '{') + '}'
+  path = path.replace(matchs[0], pathItem)
+  return replaceColon(path)
 }
 
 module.exports = {
@@ -216,4 +225,4 @@ module.exports = {
   createSingleSchema: BaseSchema.createSingleSchema,
   methodHandler,
   ctHandler
-};
+}
